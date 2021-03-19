@@ -57,16 +57,16 @@ namespace Business.Concrete
             return new SuccessDataResult<List<CarImage>>(_carImageDal.GetAll());
         }
 
-        public IDataResult<List<CarImage>> GetImagesByCarId(int carId)
+        public IDataResult<List<CarImage>> GetImagesByCarId(int id)
         {
-            IResult result = BusinessRules.Run(CheckIfCarImageNull(carId));
+            IResult result = BusinessRules.Run(CheckIfCarImageNull(id));
 
             if (result != null)
             {
                 return new ErrorDataResult<List<CarImage>>(result.Message);
             }
 
-            return new SuccessDataResult<List<CarImage>>(CheckIfCarImageNull(carId).Data);
+            return new SuccessDataResult<List<CarImage>>(CheckIfCarImageNull(id).Data);
         }
 
         public IDataResult<CarImage> GetById(int id)
@@ -86,16 +86,16 @@ namespace Business.Concrete
             return new SuccessResult();
         }
 
-        private IDataResult<List<CarImage>> CheckIfCarImageNull(int carId)
+        private IDataResult<List<CarImage>> CheckIfCarImageNull(int id)
         {
             try
             {
-                var result = _carImageDal.GetAll(c => c.CarId == carId).Any();
+                var result = _carImageDal.GetAll(c => c.CarId == id).Any();
                 if (!result)
                 {
-                    string path = @"\wwwroot\img\logo.jpg";
+                    string path = "logo.jpg";
                     List<CarImage> carimage = new List<CarImage>();
-                    carimage.Add(new CarImage { CarId = carId, ImagePath = path, Date = DateTime.Now });
+                    carimage.Add(new CarImage { CarId = id, ImagePath = path, Date = DateTime.Now });
                     return new SuccessDataResult<List<CarImage>>(carimage);
                 }
             }
@@ -104,7 +104,7 @@ namespace Business.Concrete
                 return new ErrorDataResult<List<CarImage>>(exception.Message);
             }
 
-            return new SuccessDataResult<List<CarImage>>(_carImageDal.GetAll(p => p.CarId == carId).ToList());
+            return new SuccessDataResult<List<CarImage>>(_carImageDal.GetAll(p => p.CarId == id).ToList());
         }
 
         

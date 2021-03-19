@@ -1,4 +1,5 @@
 ﻿using Core.DataAccess.EntityFramework;
+using Core.Entities;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.DTOs;
@@ -13,7 +14,7 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfCarDal : EfEntityRepositoryBase<Car, carDBContext>, ICarDal
     {
-        public List<CarDetailDto> GetCarDetails()
+        public List<CarDetailDto> GetCarDetails(Expression<Func<CarDetailDto, bool>> filter = null)
         {
             using (carDBContext context = new carDBContext())
             {
@@ -23,8 +24,8 @@ namespace DataAccess.Concrete.EntityFramework
                              join co in context.Colors
                              on c.ColorId equals co.Id
                              select new CarDetailDto 
-                             { CarDetails = c.Description, BrandName = b.Name, ColorName = co.Name, DailyPrice = c.DailyPrice };
-                return result.ToList();
+                             { Id = c.Id,   CarDetails = c.Description, BrandName = b.Name, ColorName = co.Name, DailyPrice = c.DailyPrice};
+                return filter == null ? result.ToList() : result.Where(filter).ToList();
             }
         }
     }

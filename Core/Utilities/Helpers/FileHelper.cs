@@ -9,6 +9,7 @@ namespace Core.Utilities.Helpers
 {
     public class FileHelper
     {
+        static string uploadPath = Environment.CurrentDirectory + @"\wwwroot\img\uploads\";
         public static string Add(IFormFile file)
         {
             var sourcepath = Path.GetTempFileName();
@@ -19,15 +20,16 @@ namespace Core.Utilities.Helpers
                     file.CopyTo(uploading);
                 }
             }
-            var result = newPath(file);
-            File.Move(sourcepath, result);
-            return result;
+
+            var newFileName = newGuid(file);
+            File.Move(sourcepath, uploadPath + newFileName);
+            return newFileName;
         }
-        public static IResult Delete(string path)
+        public static IResult Delete(string fileName)
         {
             try
             {
-                File.Delete(path);
+                File.Delete(uploadPath+fileName);
             }
             catch (Exception exception)
             {
@@ -38,27 +40,23 @@ namespace Core.Utilities.Helpers
         }
         public static string Update(string sourcePath, IFormFile file)
         {
-            var result = newPath(file).ToString();
+            var newFileName = newGuid(file);
             if (sourcePath.Length > 0)
             {
-                using (var stream = new FileStream(result, FileMode.Create))
+                using (var stream = new FileStream(uploadPath+newFileName, FileMode.Create))
                 {
                     file.CopyTo(stream);
                 }
             }
             File.Delete(sourcePath);
-            return result;
+            return newFileName;
         }
-        public static string newPath(IFormFile file)
+        public static string newGuid(IFormFile file)
         {
             FileInfo ff = new FileInfo(file.FileName);
             string fileExtension = ff.Extension;
-
-            string path = Environment.CurrentDirectory + @"\wwwroot\img\uploads";
-            var newPath = Guid.NewGuid().ToString() + fileExtension;
-
-            string result = $@"{path}\{newPath}";
-            return result;
+            var newGuid = Guid.NewGuid().ToString() + fileExtension;
+            return newGuid;
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Console
 
             IResult deneme = carManager.Add(new Car { BrandId = 2, ColorId=1, DailyPrice=2, Description="carsamba dersi denemesi", ModelYear=3999}); ;
             System.Console.WriteLine(deneme.Message);
-            foreach(var car in carManager.GetCarDetails().Data)
+            foreach(var car in carManager.GetCarDetailsByColor().Data)
             {
                 System.Console.WriteLine("{0} {1} {2} {3}", car.BrandName, car.CarDetails, car.ColorName, car.DailyPrice);
             }
