@@ -15,7 +15,6 @@ namespace Business.Constants
         public static string ProductUpdated = "Ürün güncellendi";
 
         public static string AuthorizationDenied = "Yetki sahibi değilsiniz";
-
-        
+        public static string RentalDateNotAvailable = "Araç bu zaman aralığında kiralanabilir değil";
     }
 }

@@ -1,11 +1,13 @@
 ﻿using Business.Abstract;
 using Business.Constants;
+using Core.Utilities.Business;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.DTOs;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Business.Concrete
@@ -21,9 +23,25 @@ namespace Business.Concrete
 
         public IResult Add(Rental rental)
         {
-            rental.RentDate = DateTime.Now;
+            var result = BusinessRules.Run(IsRentable(rental));
+            if (result != null) return result;
+
             _rentalDal.Add(rental);
             return new SuccessResult(Messages.ProductAdded);
+        }
+        public IResult IsRentable(Rental rental)
+        {
+            var result = _rentalDal.GetAll(r => r.CarId == rental.CarId);
+
+            if (result.Any(r => r.ReturnDate >= rental.RentDate && r.RentDate <= rental.ReturnDate )) { 
+                return new ErrorResult(Messages.RentalDateNotAvailable); 
+            }
+            if(rental.RentDate <= DateTime.Now)
+            {
+                return new ErrorResult(Messages.RentalDateNotAvailable);
+            }
+
+            return new SuccessResult();
         }
 
         public IResult Delete(Rental rental)
